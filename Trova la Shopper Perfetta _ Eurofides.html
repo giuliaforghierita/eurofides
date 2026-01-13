@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<!-- saved from url=(0079)file:///C:/Users/GiuliaForghieri-Euro/Downloads/shopper-finder-eurofides_7.html -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trova la Shopper Perfetta | Eurofides</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #fff; color: #1a1a1a; }
+    .container { max-width: 650px; margin: 0 auto; padding: 30px 20px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .intro { text-align: center; padding-top: 60px; }
+    .logo { font-size: 2rem; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 50px; }
+    h1 { font-size: 1.8rem; font-weight: 300; margin-bottom: 20px; }
+    h1 strong { font-weight: 600; }
+    .intro p { color: #666; margin-bottom: 40px; }
+    .badges { display: flex; justify-content: center; gap: 25px; margin-top: 50px; flex-wrap: wrap; }
+    .badges span { color: #666; font-size: 0.85rem; }
+    .btn { background: #1a1a1a; color: #fff; border: none; padding: 18px 50px; font-size: 1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+    .btn:hover { background: #333; }
+    .progress { margin-bottom: 30px; }
+    .progress-bar { height: 4px; background: #eee; }
+    .progress-fill { height: 100%; background: #1a1a1a; transition: width 0.3s; }
+    .options { display: grid; gap: 10px; }
+    .option { display: flex; align-items: center; gap: 15px; padding: 16px; border: 1px solid #ddd; cursor: pointer; background: #fff; }
+    .option:hover { border-color: #999; }
+    .option-icon { font-size: 1.5rem; width: 40px; text-align: center; }
+    .results-header { text-align: center; margin-bottom: 30px; }
+    .badge { background: #d4edda; color: #155724; padding: 8px 16px; display: inline-block; margin-bottom: 20px; font-size: 0.85rem; }
+    .result-box { background: #1a1a1a; color: #fff; padding: 20px 30px; display: inline-block; font-size: 1.3rem; }
+    .gate { background: #f5f5f5; padding: 30px; text-align: center; margin: 20px 0; }
+    .gate input[type="email"], .gate input[type="tel"], .gate input[type="text"] { width: 100%; max-width: 300px; padding: 12px; margin: 8px 0; border: 1px solid #ddd; font-size: 1rem; }
+    .privacy { display: flex; align-items: flex-start; gap: 10px; max-width: 300px; margin: 15px auto; text-align: left; font-size: 0.75rem; color: #666; }
+    .privacy input { margin-top: 3px; }
+    .error { background: #f8d7da; color: #721c24; padding: 10px; margin: 10px auto; max-width: 300px; display: none; }
+    .product { background: #f9f9f9; padding: 15px; margin: 8px 0; border: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+    .product a { color: #1a1a1a; text-decoration: none; flex: 1; }
+    .check { color: green; }
+    .success { background: #d4edda; padding: 15px; text-align: center; color: #155724; margin: 20px 0; }
+    .btn-reset { background: #fff; border: 1px solid #ddd; padding: 12px 30px; cursor: pointer; margin-top: 20px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- INTRO -->
+  <div id="screen-intro" class="screen active">
+    <div class="intro">
+      <div class="logo">eurofides®</div>
+      <h1>Trova la <strong>Shopper Perfetta</strong><br>per la tua Attività</h1>
+      <p>Rispondi a <strong>6 semplici domande</strong> e scopri quale shopper valorizza il tuo brand.</p>
+      <button class="btn" onclick="startQuiz()">Inizia il Quiz</button>
+      <div class="badges">
+        <span>⏱️ 2 minuti</span>
+        <span>🎯 Personalizzato</span>
+        <span>📦 24/48h</span>
+        <span>🚚 Gratis da €195</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="progress">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <button onclick="goBack()" id="btnBack" style="background:none;border:none;cursor:pointer">← Indietro</button>
+        <span id="counter">1/6</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <h2 id="questionText" style="margin-bottom:20px"></h2>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="screen-results" class="screen">
+    <div class="results-header">
+      <div class="badge">✓ Quiz completato</div>
+      <h1>La tua shopper ideale:</h1>
+      <div class="result-box" id="categoryName"></div>
+      <p style="color:#666;margin-top:10px" id="categoryDesc"></p>
+    </div>
+
+    <!-- GATE -->
+    <div id="gate" class="gate">
+      <div style="font-size:2rem;margin-bottom:10px">🔒</div>
+      <h3>Sblocca i prodotti consigliati</h3>
+      <p style="color:#666;margin-bottom:20px;font-size:0.9rem">Inserisci i tuoi dati per vedere i prodotti e ricevere un preventivo.</p>
+      
+      <div id="formError" class="error"></div>
+      
+      <input type="email" id="email" placeholder="Email *"><br>
+      <input type="tel" id="phone" placeholder="Telefono (opzionale)"><br>
+      <input type="text" id="company" placeholder="Nome attività (opzionale)">
+      
+      <div class="privacy">
+        <input type="checkbox" id="privacy">
+        <span>Accetto l'<a href="https://www.eurofides.com/policies/privacy-policy" target="_blank">informativa privacy</a> *</span>
+      </div>
+      
+      <button class="btn" id="btnSubmit" onclick="submitForm()">🔓 Sblocca Risultati</button>
+    </div>
+
+    <!-- UNLOCKED -->
+    <div id="unlocked" style="display:none">
+      <h4 style="color:#666;text-transform:uppercase;font-size:0.8rem;margin-bottom:15px">✓ Prodotti consigliati:</h4>
+      <div id="productsList"></div>
+      
+      <div style="text-align:center;margin:25px 0">
+        <a id="ctaLink" href="file:///C:/Users/GiuliaForghieri-Euro/Downloads/shopper-finder-eurofides_7.html#" target="_blank" class="btn" style="display:inline-block;text-decoration:none">Scopri i Prodotti →</a>
+      </div>
+      
+      <div class="success">✓ Ti contatteremo presto con un preventivo!</div>
+    </div>
+
+    <button class="btn-reset" onclick="resetQuiz()">Ricomincia</button>
+  </div>
+
+</div>
+
+<script>
+var WEBHOOK_URL = '';
+
+var step = 0;
+var answers = {};
+
+var questions = [
+  { id:'settore', q:'In quale settore operi?', opts:[
+    {v:'abbigliamento',l:'Abbigliamento',i:'👗'},
+    {v:'alimentare',l:'Alimentare',i:'🥐'},
+    {v:'enoteca',l:'Vino/Bevande',i:'🍷'},
+    {v:'farmacia',l:'Farmacia/Benessere',i:'💊'},
+    {v:'profumeria',l:'Profumeria',i:'✨'},
+    {v:'gioielleria',l:'Gioielleria',i:'💎'},
+    {v:'regalo',l:'Articoli Regalo',i:'🎁'},
+    {v:'altro',l:'Altro',i:'🏪'}
+  ]},
+  { id:'posizionamento', q:'Posizionamento del negozio?', opts:[
+    {v:'luxury',l:'Luxury/Premium',i:'👑'},
+    {v:'medio_alto',l:'Medio-Alto',i:'⭐'},
+    {v:'accessibile',l:'Accessibile',i:'🎯'},
+    {v:'green',l:'Eco/Sostenibile',i:'🌿'}
+  ]},
+  { id:'peso', q:'Cosa devono contenere?', opts:[
+    {v:'leggero',l:'Prodotti leggeri',i:'🪶'},
+    {v:'medio',l:'Peso medio',i:'📦'},
+    {v:'pesante',l:'Prodotti pesanti',i:'🏋️'},
+    {v:'fragile',l:'Fragili/Food',i:'🎂'}
+  ]},
+  { id:'stile', q:'Quale stile preferisci?', opts:[
+    {v:'naturale',l:'Naturale/Eco',i:'🌱'},
+    {v:'elegante',l:'Elegante',i:'✨'},
+    {v:'colorato',l:'Colorato',i:'🎨'},
+    {v:'lusso',l:'Lusso',i:'💎'}
+  ]},
+  { id:'materiale', q:'Preferenze sul materiale?', opts:[
+    {v:'carta',l:'Carta',i:'📄'},
+    {v:'tnt',l:'TNT',i:'🧵'},
+    {v:'bio',l:'Biodegradabile',i:'♻️'},
+    {v:'tessuto',l:'Juta/Cotone',i:'🌿'},
+    {v:'indifferente',l:'Nessuna preferenza',i:'🤷'}
+  ]},
+  { id:'quantita', q:'Quante shopper usi al mese?', opts:[
+    {v:'piccola',l:'Meno di 100',i:'📊'},
+    {v:'media',l:'100-500',i:'📈'},
+    {v:'grande',l:'500-2000',i:'🚀'},
+    {v:'molto_grande',l:'Oltre 2000',i:'🏭'}
+  ]}
+];
+
+function show(id) {
+  document.getElementById('screen-intro').className = 'screen';
+  document.getElementById('screen-quiz').className = 'screen';
+  document.getElementById('screen-results').className = 'screen';
+  document.getElementById('screen-' + id).className = 'screen active';
+}
+
+function startQuiz() {
+  step = 0;
+  answers = {};
+  show('quiz');
+  render();
+}
+
+function render() {
+  var q = questions[step];
+  document.getElementById('questionText').innerText = q.q;
+  document.getElementById('counter').innerText = (step+1) + '/6';
+  document.getElementById('progressFill').style.width = ((step+1)/6*100) + '%';
+  document.getElementById('btnBack').style.visibility = step === 0 ? 'hidden' : 'visible';
+  
+  var html = '';
+  for (var i = 0; i < q.opts.length; i++) {
+    var o = q.opts[i];
+    html += '<div class="option" onclick="answer(\'' + q.id + '\',\'' + o.v + '\')">';
+    html += '<span class="option-icon">' + o.i + '</span>';
+    html += '<span>' + o.l + '</span>';
+    html += '</div>';
+  }
+  document.getElementById('options').innerHTML = html;
+}
+
+function answer(qid, val) {
+  answers[qid] = val;
+  if (step < 5) {
+    step++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+function goBack() {
+  if (step > 0) {
+    step--;
+    render();
+  }
+}
+
+function getRec() {
+  var s = answers.settore || '';
+  var p = answers.posizionamento || '';
+  var st = answers.stile || '';
+  var m = answers.materiale || '';
+  
+  var cat, prods;
+  
+  if (m === 'tnt') {
+    cat = {n:'Shopper TNT', u:'https://www.eurofides.com/collections/shopper-tnt', d:'Shopper riutilizzabili in TNT'};
+    prods = [
+      {n:'Shopper in TNT Easy', c:'SHP75'},
+      {n:'Shopper TNT Colorato', c:'SHE05'},
+      {n:'Shopper TNT manico lungo', c:'SHE49'}
+    ];
+  } else if (m === 'bio') {
+    cat = {n:'Shopper Biodegradabili', u:'https://www.eurofides.com/collections/shopper-biodegradabili', d:'Shopper compostabili'};
+    prods = [
+      {n:'Shopper Bio Compostabili', c:'SHB32'},
+      {n:'Shopper Biokraft Avana', c:'SHC24'}
+    ];
+  } else if (m === 'tessuto') {
+    cat = {n:'Shopper Juta e Cotone', u:'https://www.eurofides.com/collections/shopper-juta-e-cotone', d:'Shopper naturali'};
+    prods = [
+      {n:'Borsa di Juta Naturale', c:'SHN16'},
+      {n:'Shopper Cotone manico lungo', c:'SHE43'}
+    ];
+  } else if (s === 'enoteca') {
+    cat = {n:'Shopper Portabottiglie', u:'https://www.eurofides.com/collections/shopper-portabottiglie', d:'Shopper per vino'};
+    prods = [
+      {n:'Portabottiglie Flat Bag Wine', c:'SHF08'},
+      {n:'Bag Box Wine Avana', c:'SHN42'}
+    ];
+  } else if (p === 'luxury' || st === 'lusso') {
+    cat = {n:'Shopper Carta Lusso', u:'https://www.eurofides.com/collections/shopper-carta', d:'Shopper plastificate premium'};
+    prods = [
+      {n:'Shopper Carta Lusso Opaca', c:'SHB94'},
+      {n:'Shopper Carta Lusso Lucida', c:'SHC01'},
+      {n:'Shopper Carta White Lusso', c:'SHC10'}
+    ];
+  } else {
+    cat = {n:'Shopper Carta', u:'https://www.eurofides.com/collections/shopper-carta', d:'Shopper in carta kraft e colorata'};
+    prods = [
+      {n:'Shopper Carta Kraft Easy', c:'SHM01'},
+      {n:'Shopper Carta Biokraft', c:'SHC24'},
+      {n:'Shopper Carta Colorata', c:'SHC18'}
+    ];
+  }
+  
+  return {cat:cat, prods:prods};
+}
+
+function showResults() {
+  var r = getRec();
+  document.getElementById('categoryName').innerText = r.cat.n;
+  document.getElementById('categoryDesc').innerText = r.cat.d;
+  document.getElementById('ctaLink').href = r.cat.u;
+  
+  var html = '';
+  for (var i = 0; i < r.prods.length; i++) {
+    var p = r.prods[i];
+    html += '<div class="product">';
+    html += '<span class="check">✓</span>';
+    html += '<a href="' + r.cat.u + '" target="_blank"><strong>' + p.n + '</strong><br><small style="color:#666">Cod. ' + p.c + '</small></a>';
+    html += '</div>';
+  }
+  document.getElementById('productsList').innerHTML = html;
+  
+  document.getElementById('gate').style.display = 'block';
+  document.getElementById('unlocked').style.display = 'none';
+  document.getElementById('email').value = '';
+  document.getElementById('phone').value = '';
+  document.getElementById('company').value = '';
+  document.getElementById('privacy').checked = false;
+  document.getElementById('formError').style.display = 'none';
+  
+  show('results');
+}
+
+function submitForm() {
+  var email = document.getElementById('email').value;
+  var phone = document.getElementById('phone').value;
+  var company = document.getElementById('company').value;
+  var priv = document.getElementById('privacy').checked;
+  var err = document.getElementById('formError');
+  
+  if (!email || email.indexOf('@') < 0) {
+    err.innerText = 'Inserisci una email valida';
+    err.style.display = 'block';
+    return;
+  }
+  if (!priv) {
+    err.innerText = 'Accetta la privacy policy';
+    err.style.display = 'block';
+    return;
+  }
+  
+  err.style.display = 'none';
+  
+  var btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.innerText = 'Caricamento...';
+  
+  var r = getRec();
+  var data = {
+    email: email,
+    telefono: phone,
+    azienda: company,
+    risposte: answers,
+    categoria: r.cat.n,
+    prodotti: r.prods.map(function(x){return x.n + ' (' + x.c + ')';}).join(', ')
+  };
+  
+  console.log('LEAD:', data);
+  
+  try {
+    var old = localStorage.getItem('leads') || '[]';
+    var arr = JSON.parse(old);
+    arr.push(data);
+    localStorage.setItem('leads', JSON.stringify(arr));
+  } catch(e) {}
+  
+  if (WEBHOOK_URL) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', WEBHOOK_URL);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(data));
+  }
+  
+  setTimeout(function() {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('unlocked').style.display = 'block';
+    btn.disabled = false;
+    btn.innerText = '🔓 Sblocca Risultati';
+  }, 500);
+}
+
+function resetQuiz() {
+  step = 0;
+  answers = {};
+  show('intro');
+}
+</script>
+
+
+</body></html>
